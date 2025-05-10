@@ -1,6 +1,7 @@
 from dataclasses import dataclass
-import pypinyin as chinese_pinyin
+from pypinyin import lazy_pinyin
 import pandas as pd
+import math
 
 
 @dataclass
@@ -41,28 +42,59 @@ store_alias = {
     "pxmart": "pxmart",
 }
 
+# 字元拼音
 
-def search(query, store):
+
+def get_pinyin(pinyin):
+    return lazy_pinyin(pinyin)
+
+# 檢查拼音
+
+
+def get_char_score(query_char, name_char):
+    if query_char == name_char:
+        return 1.0
+    elif get_pinyin(query_char) == get_pinyin(name_char):
+        return 0.5
+    return 0
+
+# 搜尋功能
+
+
+def search(query, items):
     def relevance(item):
         name = item.name
         score = 0
-        score -= abs(len(name) - len(query))
-        print(name)
-        
-        return 0
-    return sorted(store, key=relevance, reverse=True)
+
+        # 名稱長度懲罰，log慢慢加，+1是為了避免有奇怪的問題
+        score -= math.log(abs(len(name) - len(query)) + 1)
+
+        # 名稱中包含關鍵字，加分（不分大小寫），原本加太少
+        if query.lower() in name.lower():
+            score += len(query)*2
+
+        # 字元比對
+        for q in query:
+            for n in name:
+                score += get_char_score(q, n)
+        print(f"比對：{name}｜分數：{score}")
+        return score
+
+    return sorted(items, key=relevance, reverse=True)
 
 
+# 主功能
 store_input = input("請輸入商店名稱(中或英文):").strip()
 item_input = input("請輸入商品名稱:").strip()
 
-store_key = store_alias.get(store_input, store_input)
-the_store = store_data.get(store_key)
 
-if not the_store:
+store_key = store_alias.get(store_input, store_input)
+store_items = store_data.get(store_key)
+
+if not store_items:
     print(f"查無「{store_input}」的店家")
 else:
     print("查詢中")
-    results = search(item_input, the_store)
+    results = search(item_input, store_items)
     for r in results:
         print(f"編號:{r.number} | 名稱:{r.name} | 價格:{r.price}")
