@@ -1,100 +1,207 @@
 from dataclasses import dataclass
 from pypinyin import lazy_pinyin
+from datetime import datetime, timedelta, date, time
 import pandas as pd
 import math
 
 
 @dataclass
-class Item:
+class MainItem:
     number: int
     code: str
     name: str
     price: float
 
-# df = pd.read.excel("B.xls")
+
+@dataclass
+class ItemDetails:
+    number: int
+    code: str
+    name: str
+    price: float
+    usedPrice: float
+    lowestPrice: float
+    updateDate: datetime
 
 
-simplemart = [
-    Item(1, "A1", "falego極致冰棒", 22),
-    Item(2, "A2", "PaPa豬肉貢丸", 160),
-    Item(3, "A3", "悲事美國經典原味餅乾", 38),
-    Item(4, "A4", "超級fat棒棒腿", 165),
-    Item(5, "A5", "FAFAFAFA", 30)
+simplemart_main = [
+    MainItem(1, "A1", "falego極致冰棒", 22),
+    MainItem(2, "A2", "PaPa豬肉貢丸", 160),
+    MainItem(3, "A3", "悲事美國經典原味餅乾", 38),
+    MainItem(4, "A4", "超級fat棒棒腿", 165),
+    MainItem(5, "A5", "FAFAFAFA", 30)
 ]
 
-pxmart = [
-    Item(6, "B1", "全脂高鈣牛奶", 72),
-    Item(7, "B2", "原味餅乾組合包", 99),
-    Item(8, "B3", "芒果乾大包裝", 125),
-    Item(9, "B4", "蘋果紅茶瓶裝", 25),
-    Item(10, "B5", "冰棒快樂組合", 200)
+pxmart_main = [
+    MainItem(6, "B1", "全脂高鈣牛奶", 72),
+    MainItem(7, "B2", "原味餅乾組合包", 99),
+    MainItem(8, "B3", "芒果乾大包裝", 125),
+    MainItem(9, "B4", "蘋果紅茶瓶裝", 25),
+    MainItem(10, "B5", "冰棒快樂組合", 200)
 ]
 
-store_data = {
-    "simplemart": simplemart,
-    "pxmart": pxmart,
+simplemart_detail = [
+    ItemDetails(1, "A1", "falego極致冰棒", 22, 22,
+                21, datetime(2025, 5, 9, 12, 25)),
+    ItemDetails(2, "A2", "PaPa豬肉貢丸", 160, 160,
+                160, datetime(2025, 5, 9, 12, 25)),
+    ItemDetails(3, "A3", "悲事美國經典原味餅乾", 38, 38,
+                38, datetime(2025, 5, 9, 12, 25)),
+    ItemDetails(4, "A4", "超級fat棒棒腿", 165, 165,
+                165, datetime(2025, 5, 9, 12, 25)),
+    ItemDetails(5, "A5", "FAFAFAFA", 30, 30, 30, datetime(2025, 5, 9, 12, 25))
+]
+
+pxmart_detail = [
+    ItemDetails(1, "A1", "全脂高鈣牛奶", 72, 72,
+                72, datetime(2025, 5, 9, 12, 25)),
+    ItemDetails(2, "A2", "原味餅乾組合包", 99, 99,
+                99, datetime(2025, 5, 9, 12, 25)),
+    ItemDetails(3, "A3", "芒果乾大包裝", 125, 125,
+                125, datetime(2025, 5, 9, 12, 25)),
+    ItemDetails(4, "A4", "蘋果紅茶瓶裝", 165, 165,
+                165, datetime(2025, 5, 9, 12, 25)),
+    ItemDetails(5, "A5", "冰棒快樂組合", 25, 25, 25, datetime(2025, 5, 9, 12, 25))
+]
+
+seven_detail = [
+    ItemDetails(1, "A1", "全脂高鈣牛奶", 70, 70,
+                72, datetime(2025, 5, 9, 12, 25)),
+    ItemDetails(2, "A2", "原味餅乾組合包", 98, 98,
+                99, datetime(2025, 5, 9, 12, 25)),
+    ItemDetails(3, "A3", "芒果乾大包裝", 120, 120,
+                125, datetime(2025, 5, 9, 12, 25)),
+    ItemDetails(4, "A4", "蘋果紅茶瓶裝", 165, 165,
+                165, datetime(2025, 5, 9, 12, 25)),
+    ItemDetails(5, "A5", "冰棒快樂組合", 25, 25, 25, datetime(2025, 5, 9, 12, 25))
+]
+
+store_mainData = {
+    "simplemart": simplemart_main,
+    "pxmart": pxmart_main,
 }
+
+store_detailData = {
+    "simplemart": simplemart_detail,
+    "pxmart": pxmart_detail,
+    "seven": seven_detail
+}
+
 
 store_alias = {
     "美聯社": "simplemart",
     "simplemart": "simplemart",
     "全聯": "pxmart",
     "pxmart": "pxmart",
+    "統一": "seven",
+    "統一超商": "seven",
+    "7": "seven",
+    "711": "seven",
+    "7-11": "seven",
+    "7-ELEVEN": "seven",
+    "7ELEVEN": "seven",
+    "seven": "seven"
 }
+
+# 跨商店清單
+
+
+def allItems():
+    all_items = []
+    for store, items in store_detailData.items():
+        for item in items:
+            all_items.append((store, item))
+    return all_items
+
 
 # 字元拼音
 
 
-def get_pinyin(pinyin):
+def getPinYin(pinyin):
     return lazy_pinyin(pinyin)
 
 # 檢查拼音
 
 
-def get_char_score(query_char, name_char):
+def getCharScore(query_char, name_char):
     if query_char == name_char:
         return 1.0
-    elif get_pinyin(query_char) == get_pinyin(name_char):
+    elif getPinYin(query_char) == getPinYin(name_char):
         return 0.5
     return 0
 
-# 搜尋功能
+# 搜尋
 
 
-def search(query, items):
-    def relevance(item):
-        name = item.name
-        score = 0
+def search(query, store):
+    results = []
+    if store == "":
+        for store, items in allItems():
+            score = relevance(query, items)
+            results.append((store, items, score))
+    else:
+        items = store_detailData.get(store, [])
+        for item in items:
+            score = relevance(query, item)
+            results.append((store, item, score))
+    return sorted(results, key=lambda x: x[2], reverse=True)
 
-        # 名稱長度懲罰，log慢慢加，+1是為了避免有奇怪的問題
-        score -= math.log(abs(len(name) - len(query)) + 1)
+# def search(query, items):
 
-        # 名稱中包含關鍵字，加分（不分大小寫），原本加太少
-        if query.lower() in name.lower():
-            score += len(query)*2
 
-        # 字元比對
-        for q in query:
-            for n in name:
-                score += get_char_score(q, n)
-        print(f"比對：{name}｜分數：{score}")
-        return score
+def relevance(query, item):
+    name = item.name
+    score = 0
 
-    return sorted(items, key=relevance, reverse=True)
+    # 名稱長度懲罰，log慢慢加，+1是為了避免有奇怪的問題
+    score -= math.log(abs(len(name) - len(query)) + 1)
+
+    # 名稱中包含關鍵字，加分（不分大小寫），原本加太少
+    if query.lower() in name.lower():
+        score += len(query)*2
+
+    # 字元比對
+    for q in query:
+        for n in name:
+            score += getCharScore(q, n)
+    print(f"比對：{name}｜分數：{score}")
+    return score
+
+
+# df = pd.read.excel("B.xls")
+
+# 價錢幅度
+
+
+def priceIncrease(price, usedPrice):
+    raiseprice = usedPrice/price
+    return raiseprice
+
+
+# def print_items(items):
+    print(f"{'編號':<6}{'商品名稱':<20}{'價錢':<6}")
+    for item in items:
+        print(f"{item.number:<6}{item.code:<8}{item.name:<20}{item.price:<6}")
 
 
 # 主功能
-store_input = input("請輸入商店名稱(中或英文):").strip()
+print("可以選擇搜尋方式,如果不針對商店或是想要跨商店搜尋,商店請留白")
 item_input = input("請輸入商品名稱:").strip()
-
-
-store_key = store_alias.get(store_input, store_input)
-store_items = store_data.get(store_key)
-
-if not store_items:
-    print(f"查無「{store_input}」的店家")
-else:
+store_input = input("請輸入商店名稱(中或英文):").strip()
+if store_input == 0 or store_input == "":
     print("查詢中")
-    results = search(item_input, store_items)
-    for r in results:
-        print(f"編號:{r.number} | 名稱:{r.name} | 價格:{r.price}")
+    results = search(item_input, store_input)
+    for store, item, score in results:
+        print(
+            f"商店：{store} | 商品：{item.name} | 現在價格：${item.price} | 更新時間：{item.updateDate.strftime('%Y-%m-%d %H:%M')}")
+
+else:
+    store_key = store_alias.get(store_input, store_input)
+    store_items = store_mainData.get(store_key)
+    if not store_items:
+        print(f"查無「{store_input}」的店家")
+    else:
+        print("查詢中")
+        results = search(item_input, store_input)
+        for store, item, score in results:
+            print(f"編號:{item.number} | 名稱:{item.name} | 價格:{item.price}")
