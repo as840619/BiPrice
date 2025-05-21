@@ -131,10 +131,11 @@ def search(query, store):
     results = []
     if store == "":
         for store, items in allItems():
-            score = relevance(query, items)
-            results.append((store, items, score))
+            for item in items:
+                score = relevance(query, item)
+                results.append((store, item, score))
     else:
-        items = store_detailData.get(store, [])
+        items = store_mainData.get(store, [])
         for item in items:
             score = relevance(query, item)
             results.append((store, item, score))
