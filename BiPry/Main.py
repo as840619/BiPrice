@@ -163,19 +163,20 @@ def relevance(query, item):
 
 
 # df = pd.read.excel("B.xls")
-
-# 價錢幅度
-
+#  價錢幅度
 
 def priceIncrease(price, usedPrice):
     raiseprice = usedPrice/price
     return raiseprice
 
+# 價錢幅度二版
 
-# def print_items(items):
-    print(f"{'編號':<6}{'商品名稱':<20}{'價錢':<6}")
-    for item in items:
-        print(f"{item.number:<6}{item.code:<8}{item.name:<20}{item.price:<6}")
+
+def priceIncrease(price, usedPrice):
+    if usedPrice == 0:
+        return 0
+    return round((usedPrice - price) / usedPrice * 100, 2)
+
 
 # 每次執行抓資料
 for name, link in data_resource:
