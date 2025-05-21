@@ -201,20 +201,17 @@ for name, link in data_resource:
     except Exception as e:
         print(f"[{name}] 讀取資料時發生錯誤：{e}")
 
-url = f"https://docs.google.com/spreadsheets/d/1yqWiQSzae-xBUTwCwLl3jwTzq333KX7vS-6om3BtYM4/edit?gid=0#gid=0"
-df = pd.read_csv(url)
 
 # 主功能
 print("可以選擇搜尋方式,如果不針對商店或是想要跨商店搜尋,商店請留白")
 item_input = input("請輸入商品名稱:").strip()
 store_input = input("請輸入商店名稱(中或英文):").strip()
-if store_input == 0 or store_input == "":
+if store_input == "":
     print("查詢中")
     results = search(item_input, store_input)
     for store, item, score in results:
         print(
-            f"商店：{store} | 商品：{item.name} | 現在價格：${item.price} | 折扣：{priceIncrease(item.usedPrice/item.price)}% | 歷史低價：${item.lowestPrice} | 更新時間：{item.updateDate.strftime('%Y-%m-%d %H:%M')}")
-
+            f"商店：{store} | 商品：{item.name} | 現在價格：${item.price} | 折扣：{priceIncrease(item.price,item.usedPrice)}% | 歷史低價：${item.lowestPrice} | 更新時間：{item.updateDate.strftime('%Y-%m-%d %H:%M')}")
 else:
     store_key = store_alias.get(store_input, store_input)
     store_items = store_mainData.get(store_key)
