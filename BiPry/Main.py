@@ -24,21 +24,8 @@ class ItemDetails:
     updateDate: datetime
 
 
-simplemart_main = [
-    MainItem(1, "A1", "falego極致冰棒", 22),
-    MainItem(2, "A2", "PaPa豬肉貢丸", 160),
-    MainItem(3, "A3", "悲事美國經典原味餅乾", 38),
-    MainItem(4, "A4", "超級fat棒棒腿", 165),
-    MainItem(5, "A5", "FAFAFAFA", 30)
-]
-
-pxmart_main = [
-    MainItem(6, "B1", "全脂高鈣牛奶", 72),
-    MainItem(7, "B2", "原味餅乾組合包", 99),
-    MainItem(8, "B3", "芒果乾大包裝", 125),
-    MainItem(9, "B4", "蘋果紅茶瓶裝", 25),
-    MainItem(10, "B5", "冰棒快樂組合", 200)
-]
+simplemart_main = []
+pxmart_main = []
 
 simplemart_detail = [
     ItemDetails(1, "A1", "falego極致冰棒", 22, 22,
@@ -76,6 +63,7 @@ seven_detail = [
     ItemDetails(5, "A5", "冰棒快樂組合", 25, 25, 25, datetime(2025, 5, 9, 12, 25))
 ]
 
+
 store_mainData = {
     "simplemart": simplemart_main,
     "pxmart": pxmart_main,
@@ -102,6 +90,11 @@ store_alias = {
     "7ELEVEN": "seven",
     "seven": "seven"
 }
+
+data_resource = [
+    ("pxmart", "https://docs.google.com/spreadsheets/d/1rncnrmcCxBipd9WpM5TvuvJgiKJDgg4F/export?format=csv&gid=485388574"),
+    ("simplemart", "https://docs.google.com/spreadsheets/d/1UnHQ0JLi_mw9KaP71tW-NmUPdlNS3B6VPsKyuS25cQ0/export?format=csv&gid=0")
+]
 
 
 # 跨商店清單
@@ -184,6 +177,28 @@ def priceIncrease(price, usedPrice):
     for item in items:
         print(f"{item.number:<6}{item.code:<8}{item.name:<20}{item.price:<6}")
 
+# 每次執行抓資料
+for name, link in data_resource:
+    try:
+        print(f"正在讀取：{name}")
+        df = pd.read_csv(link, encoding='utf-8')
+        # print(f"[{name}] 實際讀到 {len(df)} 筆資料")
+
+        if df.empty:
+            print(f"[{name}] 沒有資料！")
+        else:
+            for _, row in df.iterrows():
+                item = MainItem(
+                    number=int(row["商品編號"]),
+                    code=str(row["商品序號"]),
+                    name=str(row["商品名稱"]),
+                    price=float(row["商品價錢"]),
+                )
+                # print(f"第一{item.number}{item.code}{item.name}{item.price}")
+                store_mainData[name].append(item)
+                # print(f"已儲存：{item.name}")
+    except Exception as e:
+        print(f"[{name}] 讀取資料時發生錯誤：{e}")
 
 url = f"https://docs.google.com/spreadsheets/d/1yqWiQSzae-xBUTwCwLl3jwTzq333KX7vS-6om3BtYM4/edit?gid=0#gid=0"
 df = pd.read_csv(url)
