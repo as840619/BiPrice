@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>比價網</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            margin: 0;
+            height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* 右上輸入框 */
+        .slide-box {
+            position: fixed;
+            top: 20px;
+            left: 55px;
+            right: 20px;
+            background-color: white;
+            border: 2px solid #0d6efd;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            z-index: 1000;
+
+        }
+
+        /* 左上選單容器 */
+        .menu-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 260px;
+            max-width: 80%;
+            height: 100%;
+            background-color: white;
+            border-right: 2px solid #0d6efd;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+            padding: 60px 15px 15px 15px;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            z-index: 1001;
+        }
+
+        .menu-wrapper.active {
+            transform: translateX(0);
+        }
+
+        /* 選單按鈕 */
+        .menu-toggle {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            width: 35px;
+            height: 30px;
+            cursor: pointer;
+            z-index: 1100;
+        }
+
+        .menu-toggle span {
+            display: block;
+            height: 4px;
+            background: #0d6efd;
+            margin: 6px 0;
+            border-radius: 2px;
+            transition: 0.3s;
+        }
+
+        /* 選單內容樣式 */
+        .menu-section h5 {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        .menu-section a {
+            display: block;
+            padding-left: 10px;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .menu-section a:hover {
+            color: #0d6efd;
+        }
+
+        .main-scene {
+            position: fixed;
+        }
+
+
+        @media (max-width: 576px) {
+            .menu-wrapper {
+                width: 80%;
+            }
+
+            .slide-box .form-label {
+                flex-shrink: 0;
+                min-width: 100px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 選單按鈕 -->
+    <div class="menu-toggle" onclick="toggleMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <!-- 選單本體 -->
+    <div class="menu-wrapper" id="menu">
+        <div class="menu-section">
+            <h5>標題一</h5>
+            <a href="#">子標題 1-1</a>
+            <a href="#">子標題 1-2</a>
+            <a href="#">子標題 1-3</a>
+
+            <h5>標題二</h5>
+            <a href="#">子標題 2-1</a>
+            <a href="#">子標題 2-2</a>
+            <a href="#">子標題 2-3</a>
+
+            <h5>標題三</h5>
+            <a href="#">子標題 3-1</a>
+            <a href="#">子標題 3-2</a>
+            <a href="#">子標題 3-3</a>
+        </div>
+    </div>
+
+    <!-- 右上輸入框 -->
+    <div class="slide-box">
+        <div class="d-flex align-items-center gap-1 flex-wrap: nowrap">
+            <label for="input1" class="form-label mb-0" style="white-space: nowrap;">請輸入商品名稱</label>
+            <input type="text" class="form-control flex-grow-1" id="input1"
+                placeholder="例如：牛奶、泡麵、洗髮精...。越詳細的名稱越容易出現；若不清楚產品名稱，相連的字詞或是品牌的名稱會更優先被搜尋到。">
+        </div>
+    </div>
+
+    <!-- JavaScript for toggling menu -->
+    <script>
+        function toggleMenu() {
+            document.getElementById('menu').classList.toggle('active');
+        }
+    </script>
+
+</body>
+
+</html>
